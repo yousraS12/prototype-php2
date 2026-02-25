@@ -1,42 +1,232 @@
-
-
 <?php    
 
-  
-   $name= "Guest";
+$userName = "Guest";
+$bgColor  = "#ffffff";
+$language = "fr";
 
-   if(isset($_COOKIE["name"])){
-      
-      $name = $_COOKIE["name"];
-   }
+$currentDate = date("d/m/Y H:i");
 
-   if($_SERVER["REQUEST_METHOD"] === "POST"){
-         
+
+if(isset($_COOKIE["name_cookie"])){
+    $userName = $_COOKIE["name_cookie"];
+}
+
+if(isset($_COOKIE["color_cookie"])){
+    $bgColor = $_COOKIE["color_cookie"];
+}
+
+if(isset($_COOKIE["lang_cookie"])){
+    $language = $_COOKIE["lang_cookie"];
+}
+
+
+switch ($language){
+
+     case "en":
+        $welcomeText   = "Welcome, ";
+        $lastUpdate    = "Last update is: ";
+        $labelName     = "Name";
+        $labelLanguage = "Language";
+        $btnSave       = "Save your choices";
+        $btnReset      = "Reset all";
+        $labelColor    = "Background color";
+    break;
+
+    case "fr":
+        $welcomeText   = "Bienvenue, ";
+        $lastUpdate    = "Dernière mise à jour : ";
+        $labelName     = "Nom";
+        $labelLanguage = "Langue";
+        $btnSave       = "Enregistrer mes choix";
+        $btnReset      = "Réinitialiser tout";
+        $labelColor    = "Couleur de fond";
+    break;
+}
+
+
+// handle form
+if($_SERVER["REQUEST_METHOD"] === "POST"){
     
     if(!empty($_POST["f_name"])){
-
-    $name= $_POST["f_name"];
-    setcookie("name" , $name , time() + 3600 * 24 * 30);
+        $userName = trim($_POST["f_name"]);
+        setcookie("name_cookie", $userName, time() + 3600 * 24 * 30);
     }
 
-   }
-
-
-    if($_SERVER["REQUEST_METHOD"] === "GET"){
-
-        if(isset($_GET["action"]) && $_GET["action"] == "rest"){
-        $name="Guest";
-        setcookie("name" , $name , time() - 3600 * 24 * 30);
-
-   }
-   
+    if(!empty($_POST["bg_color"])){
+        $bgColor = $_POST["bg_color"];
+        setcookie("color_cookie", $bgColor, time() + 3600 * 24 * 30);
     }
 
-   
+    if(!empty($_POST["choose"])){
+        $language = $_POST["choose"];
+        setcookie("lang_cookie", $language, time() + 3600 * 24 * 30);
+    }
+
+    header("Location: index.php");
+    exit();
+}
+
+
+if(isset($_GET["action"]) && $_GET["action"] === "reset"){
+
+    setcookie("name_cookie", "", time() - 3600 * 24 * 30);
+    setcookie("color_cookie", "", time() - 3600 * 24 * 30);
+    setcookie("lang_cookie", "", time() - 3600 * 24 * 30);
+
+    header("Location: index.php");
+    exit();
+}
 
 ?>
+<!DOCTYPE html>
+<html lang="<?php echo $language; ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preference App</title>
+
+    <style>
+        body{
+            background-color: <?php echo htmlspecialchars($bgColor); ?>;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+
+        <h1>
+            <?php echo $welcomeText . htmlspecialchars($userName); ?>
+        </h1>
+
+        <h3>
+            <?php echo $lastUpdate . $currentDate; ?>
+        </h3>
+
+        <form method="post">
+
+            <label for="name"><?php echo $labelName; ?></label><br>
+            <input type="text"  name="f_name"  id="name" required>
+
+            <br><br>
+
+            <label for="bg_color"><?php echo $labelColor; ?></label><br>
+            <input type="color" name="bg_color" value="<?php echo htmlspecialchars($bgColor); ?>">
+
+            <br><br>
+
+            <label><?php echo $labelLanguage; ?></label>
+            
+            <br>
+
+            <select name="choose">
+                <option value="en" <?php if($language === "en") echo "selected"; ?>>English</option>
+                <option value="fr" <?php if($language === "fr") echo "selected"; ?>>Francais</option>
+            </select>
+
+            <br><br>
+
+            <input type="submit" value="<?php echo $btnSave; ?>">
+
+        </form>
+
+        <br><hr>
+
+        <a href="index.php?action=reset">
+            <?php echo $btnReset; ?>
+        </a>
+
+    </div>
+
+</body>
+</html>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+  -->
+
+<!-- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,4 +290,4 @@
      </div>
     
 </body>
-</html>
+</html> -->
